@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xyz.dreature.cms.comment.mapper.CommentMapper">
+    <select id="queryCommentByPostId" parameterType="Integer" resultType="Comment">
+        select *
+        from dc_comment
+        where comment_post_id = #{postId}
+    </select>
+
+    <insert id="addComment" parameterType="Comment">
+        insert into dc_comment(comment_commenter_id,
+                               comment_commenter_nickname,
+                               comment_commenter_profile_picture_url,
+                               comment_post_id,
+                               comment_parent_id,
+                               comment_depth,
+                               comment_content,
+                               comment_status)
+        values (#{commentCommenterId},
+                #{commentCommenterNickname},
+                #{commentCommenterProfilePictureUrl},
+                #{commentPostId},
+                #{commentParentId},
+                #{commentDepth},
+                #{commentContent},
+                #{commentStatus})
+    </insert>
+
+    <update id="hideComment">
+        update dc_comment set
+        comment_status = 0
+        where comment_id in
+        <foreach collection="array" item="commentId" index="index" open="(" close=")" separator=",">
+            #{commentId}
+        </foreach>
+    </update>
+
+    <update id="showComment">
+        update dc_comment set
+        comment_status = 1
+        where comment_id in
+        <foreach collection="array" item="commentId" index="index" open="(" close=")" separator=",">
+            #{commentId}
+        </foreach>
+    </update>
+
+    <select id="queryTotal" resultType="Integer">
+        select count(comment_id)
+        from dc_comment;
+    </select>
+
+    <select id="queryAllComments" resultType="Comment">
+        select *
+        from dc_comment limit #{start},#{rows}
+    </select>
+
+</mapper>

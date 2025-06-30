@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xyz.dreature.cms.content.mapper.ContentMapper">
+    <!--数量查询-->
+    <select id="queryTotalOfPost" resultType="int">
+        SELECT count(post_id)
+        FROM dc_post;
+    </select>
+
+    <select id="queryTotalOfPostInCategory" resultType="int">
+        SELECT count(post_id)
+        FROM dc_post
+        WHERE post_category_id = #{categoryId};
+    </select>
+
+    <select id="queryPostBriefTotalByPostId" parameterType="Integer" resultType="Integer">
+        SELECT count(post_brief_id)
+        FROM dc_post_brief
+        WHERE post_id = #{postId};
+    </select>
+
+    <select id="queryTotalOfCategory" resultType="int">
+        SELECT count(category_id)
+        FROM dc_category;
+    </select>
+
+    <select id="queryTotalOfSearchResultByQ" resultType="int">
+        SELECT count(post_id)
+        FROM dc_post
+        WHERE post_title LIKE #{q};
+    </select>
+
+    <!--Post类、PostBrief类和Category类查询-->
+    <select id="queryPostById" parameterType="Integer" resultType="Post">
+        SELECT *
+        FROM dc_post
+        WHERE post_id = #{postId}
+    </select>
+
+    <select id="queryPostByPage" resultType="Post">
+        SELECT *
+        FROM dc_post LIMIT #{start},#{length}
+    </select>
+
+    <select id="queryPostBriefByPostId" parameterType="Integer" resultType="PostBrief">
+        SELECT *
+        FROM dc_post_brief
+        WHERE post_id = #{postId}
+    </select>
+
+    <select id="listHotRankByPage" resultType="Post">
+        SELECT *
+        FROM dc_post
+        ORDER BY post_hot DESC LIMIT #{start}, #{length}
+    </select>
+
+    <select id="listHotRankByCategoryIdAndPage" resultType="Post">
+        SELECT *
+        FROM dc_post
+        WHERE post_category_id = #{categoryId}
+        ORDER BY post_hot DESC LIMIT #{start}, #{length}
+    </select>
+
+    <select id="queryAllCategory" resultType="Category">
+        SELECT *
+        FROM dc_category;
+    </select>
+    <!-- 搜索 -->
+    <select id="searchPostByQAndPage" resultType="Post">
+        SELECT *
+        FROM dc_post
+        WHERE post_title LIKE #{q} LIMIT #{start}
+            , #{length}
+    </select>
+
+
+    <!--文章阅读量、热度值计算-->
+    <update id="addPostView" parameterType="Integer">
+        UPDATE dc_post
+        SET post_view = post_view + 1
+        WHERE post_id = #{postId}
+    </update>
+
+    <update id="addPostHot">
+        <if test="addedValue != null and addedValue != '' ">
+            UPDATE dc_post SET
+            post_hot = post_hot + #{addedValue}
+            <where>
+                <if test="postId != null and postId != '' ">AND post_id =#{postId}</if>
+            </where>
+        </if>
+    </update>
+
+    <update id="resetPostHot">
+        <if test="newValue != null and newValue != '' ">
+            UPDATE dc_post SET
+            post_hot = #{newValue}
+            <where>
+                <if test="postId != null and postId != '' ">AND post_id =#{postId}</if>
+            </where>
+        </if>
+    </update>
+
+    <!--后台文章管理-->
+    <insert id="postPost" parameterType="Post">
+        INSERT INTO dc_post(post_id, post_author_id,
+                            post_title, post_excerpt, post_cover_url, post_content)
+        VALUES (#{postId}, #{postAuthorId}, #{postTitle},
+                #{postExcerpt}, #{postCoverUrl}, #{postContent})
+    </insert>
+
+    <update id="updatePost" parameterType="Post">
+        UPDATE dc_post
+        SET post_id=#{postId},
+            post_author_id=#{postAuthorId},
+            post_date=#{postDate},
+            post_title=#{postTitle},
+            post_excerpt=#{postExcerpt},
+            post_cover_url=#{postCoverUrl},
+            post_content=#{postContent},
+            post_view=#{postView},
+            post_like=#{postLike},
+            post_favorite=#{postFavorite},
+            post_repost=#{postRepost},
+            post_hot=#{postHot},
+            post_category_id=#{postCategoryId},
+            post_status=#{postStatus}
+        WHERE post_id = #{postId}
+    </update>
+
+    <delete id="deletePost" parameterType="Post">
+        DELETE FROM dc_post WHERE post_id in
+        <foreach collection="array" item="postId" index="index" open="(" close=")" separator=",">
+            #{postId}
+        </foreach>
+    </delete>
+
+    <update id="hidePost" parameterType="Post">
+        UPDATE dc_post SET
+        post_status = 0
+        WHERE post_id IN
+        <foreach collection="array" item="postId" index="index" open="(" close=")" separator=",">
+            #{postId}
+        </foreach>
+    </update>
+
+    <update id="showPost" parameterType="Post">
+        UPDATE dc_post SET
+        post_status = 1
+        WHERE post_id IN
+        <foreach collection="array" item="postId" index="index" open="(" close=")" separator=",">
+            #{postId}
+        </foreach>
+    </update>
+</mapper>
