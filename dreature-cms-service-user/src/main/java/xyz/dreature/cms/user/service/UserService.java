@@ -118,7 +118,7 @@ public class UserService {
         jedis.del(ticket);
     }
 
-//-----后台用户管理------
+//=====后台用户管理------
 
     public boolean checkAdminUser(String ticket) throws Exception {
         if (ticket == null) throw new Exception("未登录");

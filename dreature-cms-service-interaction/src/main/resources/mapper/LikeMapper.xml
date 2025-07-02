@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xyz.dreature.cms.interaction.mapper.LikeMapper">
+
+    <select id="queryTotalOfLikeOfUser" resultType="int">
+        SELECT count(like_id)
+        FROM dc_like
+        WHERE like_liker_id = #{userId};
+    </select>
+
+    <select id="queryLikeByUserIdAndPage" resultType="Post">
+        SELECT *
+        FROM dc_post
+        WHERE post_id IN (SELECT like_post_id
+                          FROM dc_like
+                          WHERE like_liker_id = #{userId})
+            LIMIT #{start}
+            , #{length};
+    </select>
+
+    <select id="queryLikeByUserIdAndPostId" resultType="Like">
+        SELECT *
+        from dc_like
+        WHERE like_liker_id = #{userId}
+          AND like_post_id = #{postId};
+    </select>
+
+    <insert id="addLike" parameterType="Like">
+        INSERT INTO dc_like(like_liker_id, like_post_id)
+        VALUES (#{likeLikerId}, #{likePostId});
+    </insert>
+
+    <delete id="cancelLike" parameterType="Like">
+        DELETE
+        FROM dc_like
+        WHERE like_liker_id = #{likeLikerId}
+          AND like_post_id = #{likePostId};
+    </delete>
+
+    <update id="addPostHot">
+        <if test="addedValue != null and addedValue != '' ">
+            UPDATE dc_post SET
+            post_hot = post_hot + #{addedValue}
+            <where>
+                <if test="postId != null and postId != '' ">AND post_id =#{postId}</if>
+            </where>
+        </if>
+    </update>
+
+    <select id="showLikeChart" resultType="Post">
+        SELECT *
+        FROM dc_post
+        WHERE post_like > 0
+        ORDER BY post_like DESC limit 10
+    </select>
+
+</mapper>

@@ -24,7 +24,7 @@ public class ContentService {
 
     private ObjectMapper mapper = MapperUtil.MP;
 
-    //-----前台文章与类别相关-----
+    //=====前台文章与类别相关=====
     //查询文章总数
     public Integer queryTotalOfPost() {
         return contentMapper.queryTotalOfPost();
@@ -281,7 +281,7 @@ public class ContentService {
         contentMapper.showPost(integerIdArr);
     }
 
-    //-----文章阅读量、热度值相关-----
+    //=====文章阅读量、热度值相关=====
     //增加文章阅读量
     public void addPostView(Integer postId) {
         contentMapper.addPostView(postId);

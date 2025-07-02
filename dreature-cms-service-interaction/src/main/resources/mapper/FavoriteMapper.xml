@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xyz.dreature.cms.interaction.mapper.FavoriteMapper">
+
+    <select id="queryTotalOfFavoriteOfUser" resultType="int">
+        SELECT count(favorite_id)
+        FROM dc_favorite
+        WHERE favorite_favoriter_id = #{userId};
+    </select>
+
+    <select id="queryFavoriteByUserIdAndPage" resultType="Post">
+        SELECT *
+        FROM dc_post
+        WHERE post_id IN (SELECT favorite_post_id FROM dc_favorite WHERE favorite_favoriter_id = #{userId})
+            LIMIT #{start}
+            , #{length};
+    </select>
+
+    <select id="queryFavoriteByUserIdAndPostId" resultType="Favorite">
+        SELECT *
+        from dc_favorite
+        WHERE favorite_favoriter_id = #{userId}
+          AND favorite_post_id = #{postId};
+    </select>
+
+    <insert id="addFavorite" parameterType="Favorite">
+        INSERT INTO dc_favorite(favorite_favoriter_id, favorite_post_id)
+        VALUES (#{favoriteFavoriterId}, #{favoritePostId});
+    </insert>
+
+    <delete id="cancelFavorite" parameterType="Favorite">
+        DELETE
+        FROM dc_favorite
+        WHERE favorite_favoriter_id = #{favoriteFavoriterId}
+          AND favorite_post_id = #{favoritePostId};
+    </delete>
+
+    <update id="addPostHot">
+        <if test="addedValue != null and addedValue != '' ">
+            UPDATE dc_post SET
+            post_hot = post_hot + #{addedValue}
+            <where>
+                <if test="postId != null and postId != '' ">AND post_id =#{postId}</if>
+            </where>
+        </if>
+    </update>
+
+    <select id="showFavoriteChart" resultType="Post">
+        SELECT *
+        FROM dc_post
+        WHERE post_favorite > 0
+        ORDER BY post_favorite DESC limit 10
+    </select>
+
+</mapper>

@@ -20,7 +20,7 @@ public class ContentController {
     @Autowired
     private RestTemplate restTemplate;
 
-    //-----数量查询-----
+    //=====数量查询=====
 //  查询文章总数
     @RequestMapping("/query/total")
     public Integer queryTotalOfPost() {
@@ -34,7 +34,7 @@ public class ContentController {
         return contentService.queryTotalOfPostInCategory(categoryid);
     }
 
-//-----前台文章与类别相关-----
+//=====前台文章与类别相关=====
 //	文章按页数显示
 
     @RequestMapping("/recommend")
@@ -78,7 +78,7 @@ public class ContentController {
         return ResponseEntity.ok().body(result);
     }
 
-    //-----文章阅读量、热度值相关-----
+    //=====文章阅读量、热度值相关=====
 //  阅览数+1
     @RequestMapping("/view")
     public ResponseEntity<Result> addPostViewAndHot(Integer postid) {

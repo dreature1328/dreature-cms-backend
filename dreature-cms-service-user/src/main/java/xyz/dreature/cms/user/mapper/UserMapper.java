@@ -17,7 +17,7 @@ public interface UserMapper {
 
     public void registerUser(User user);
 
-    //-----后台用户管理-----
+    //=====后台用户管理=====
     // 交给sql语句的参数一般只有一个，两个还能否使用#{}
     // 多个参数传递给SQLSession根据映射文件#{}拼接数据时，可以用@Param注解定义参数变量名称
     public List<User> queryUserByPage(@Param("start") Integer start, @Param("rows") Integer rows);

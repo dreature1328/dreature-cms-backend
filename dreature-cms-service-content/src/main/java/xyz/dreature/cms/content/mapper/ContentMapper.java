@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ContentMapper {
 
-    //-----数量查询-----
+    //=====数量查询=====
     public Integer queryTotalOfPost();
 
     public Integer queryTotalOfCategory();
@@ -20,7 +20,7 @@ public interface ContentMapper {
 
     public Integer queryTotalOfSearchResultByQ(String q);
 
-    //-----Post类、PostBrief类和Category类查询-----
+    //=====Post类、PostBrief类和Category类查询=====
     public Post queryPostById(Integer postId);
 
     // 交给sql语句的参数一般只有一个，两个还能否使用#{}
@@ -37,7 +37,7 @@ public interface ContentMapper {
 
     public List<Post> searchPostByQAndPage(@Param("q") String q, @Param("start") Integer start, @Param("length") Integer length);
 
-    //-----文章阅读量、热度值计算-----
+    //=====文章阅读量、热度值计算=====
     public void addPostView(Integer postId);
 
     public void addPostHot(@Param("postId") Integer postId,
@@ -46,7 +46,7 @@ public interface ContentMapper {
     public void resetPostHot(@Param("postId") Integer postId,
                              @Param("newValue") Integer newValue);
 
-    //-----后台文章管理-----
+    //=====后台文章管理=====
     public void postPost(Post post);
 
     public void updatePost(Post post);

@@ -1,11 +1,16 @@
 package xyz.dreature.cms.comment.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import xyz.dreature.cms.comment.mapper.CommentMapper;
 import xyz.dreature.cms.common.entity.Comment;
+import xyz.dreature.cms.common.entity.User;
+import xyz.dreature.cms.common.vo.SysResult;
 import xyz.dreature.cms.common.vo.TableResult;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,6 +18,8 @@ import java.util.stream.Collectors;
 public class CommentService {
     @Autowired
     CommentMapper commentMapper;
+    @Autowired
+    RestTemplate restTemplate;
 
     public List<Comment> queryCommentByPostId(Integer postId) {
         List<Comment> comments = commentMapper.queryCommentByPostId(postId);
@@ -84,5 +91,32 @@ public class CommentService {
         result.setTotal(total);
         result.setItems(pList);
         return result;
+    }
+
+    // ===== 中间函数，判断身份 =====
+
+    public User checkUser(HttpServletRequest request) throws Exception {
+
+        String ticket = request.getParameter("ticket");
+        if (ticket == null) throw new Exception("未登录，请先登录");
+
+        SysResult result = restTemplate.getForObject("http://userservice/user/admin/inner/userquery/"
+                + ticket, SysResult.class);
+        if (result.getData() == null) throw new Exception(result.getMsg());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        User user = objectMapper.convertValue(result.getData(), User.class);
+        return user;
+    }
+
+    public void checkAdmin(HttpServletRequest request) throws Exception {
+        String ticket = request.getParameter("ticket");
+        if (ticket == null) throw new Exception("非法访问!");
+
+        Boolean isadmin = restTemplate.getForObject("http://userservice/user/admin/inner/adminquery/"
+                + ticket, Boolean.class);
+
+        if (!isadmin) throw new Exception("非法访问!");
     }
 }
